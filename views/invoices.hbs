@@ -1,0 +1,70 @@
+
+<!-- index.hbs -->
+<h1>Invoices Table</h1>
+<p>Use this page to look at the current list of invoices.</p>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+
+{{!-- The Data from our Database --}}
+
+{{!-- Create a table --}}
+<table id="invoices-table">
+
+    {{!-- Header section --}}
+    <thead>
+
+        {{!-- For just the first row, we print each key of the row object as a header cell so we
+        know what each column means when the page renders --}}
+        <tr>
+            {{#each data.[0]}}
+            <th>
+                {{@key}}
+            </th>
+            {{/each}}
+        </tr>
+    </thead>
+
+    {{!-- Body section --}}
+    <tbody>
+
+        {{!-- For each row, print in order --}}
+        {{#each data}}
+        <tr>
+            <td>{{this.purchase_id}}</td>
+            <td>{{this.purchase_date}}</td>
+            <td>{{this.name}}</td>
+            <td>{{this.email}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<!-- /views/index.hbs -->
+
+{{!-- Form to add a record to the table  --}}
+<h2>Adding an Invoice</h2>
+<p>Please select which customer you'd like to make an invoice for and click 'Submit'!</p>
+<form id="add-invoice-form-ajax">
+    <label for="input-date">Date: </label>
+    <input type="date" name="input-date" id="input-date">
+    
+    <label for="input-customer">Customer: </label>
+    <select name="input-customer" id="input-customer-ajax">
+        <option value="">Select a Customer</option>
+        {{#each customers}}
+        <option value="{{this.customer_id}}">{{this.name}}, {{this.email}}</option>
+        {{/each}}
+    </select>
+
+    <input type="submit">
+</form>
+
+{{!-- Embed our javascript to handle the DOM manipulation and AJAX request --}}
+<script src="./js/add_invoice.js"></script>
+
+<script>
+const today = new Date()
+const date = today.toLocaleDateString("en-CA")
+document.getElementById("input-date").value = date
+</script>
