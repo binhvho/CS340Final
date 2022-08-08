@@ -39,7 +39,6 @@ app.get('/customers', function (req, res) {
     })
 });
 
-
 app.post('/add-customer-ajax', function (req, res) {
     // Capture the incoming data and parse it back to a JS object
     let data = req.body;
@@ -59,6 +58,60 @@ app.post('/add-customer-ajax', function (req, res) {
         else {
             // If there was no error, perform a SELECT *
             query2 = `SELECT * FROM Customers`;
+            db.pool.query(query2, function (error, rows, fields) {
+
+                // If there was an error on the second query, send a 400
+                if (error) {
+
+                    // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+                    console.log(error);
+                    res.sendStatus(400);
+                }
+                // If all went well, send the results of the query back.
+                else {
+                    res.send(rows);
+                }
+            })
+        }
+    })
+});
+
+app.get('/invoices', function (req, res) {
+    let query1 = "SELECT purchase_id, purchase_date, Customers.name, Customers.email FROM Invoices JOIN Customers WHERE Invoices.customer_id = Customers.customer_id ORDER BY purchase_id";
+    
+    db.pool.query(query1, function (error, rows, fields) {
+
+        let invoices = rows
+        let query2 = "SELECT * FROM Customers;"
+        
+        db.pool.query(query2, function (error, rows, fields) {
+
+            let customers = rows
+            res.render('invoices', {data: invoices, customers: customers})
+    
+        })
+
+    })
+});
+
+app.post('/add-invoice-ajax', function (req, res) {
+    // Capture the incoming data and parse it back to a JS object
+    let data = req.body;
+
+    // Create the query and run it on the database
+    query1 = `INSERT INTO Invoices (purchase_date, customer_id) VALUES ('${data.purchase_date}', '${data.customer_id}')`;
+    db.pool.query(query1, function (error, rows, fields) {
+
+        // Check to see if there was an error
+        if (error) {
+
+            // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+            console.log(error)
+            res.sendStatus(400);
+        }
+        else {
+            // If there was no error, perform a SELECT *
+            query2 = "SELECT purchase_id, purchase_date, Customers.name, Customers.email FROM Invoices JOIN Customers WHERE Invoices.customer_id = Customers.customer_id ORDER BY purchase_id";
             db.pool.query(query2, function (error, rows, fields) {
 
                 // If there was an error on the second query, send a 400
