@@ -1,5 +1,5 @@
 // Get the objects we need to modify
-let addInvoiceForm = document.getElementById('add-invoice-form-ajax');
+let addInvoiceForm = document.getElementById('add-invoice-lines-form-ajax');
 
 // Modify the objects we need
 addInvoiceForm.addEventListener("submit", function (e) {
@@ -8,23 +8,40 @@ addInvoiceForm.addEventListener("submit", function (e) {
     e.preventDefault();
 
     // Get form fields we need to get data from
-    let inputDate = document.getElementById("input-date");
-    let inputCustomer = document.getElementById("input-customer-ajax");
-
+    let inputInvoice = document.getElementById("input-invoice-ajax");
+    let inputGame = document.getElementById("input-game-ajax");
+    let inputQuantity = document.getElementById("input-qty");
+    console.log(inputGame.value)
 
     // Get the values from the form fields
-    let dateValue = inputDate.value;
-    let customerValue = inputCustomer.value;
+    let invoiceValue = inputInvoice.value;
+    let index = 0
+    for (var i = 0; i < inputGame.value.length; i++) {
+        if (inputGame.value.charAt(i) == ',') {
+            index = i
+            break
+        }
+    }
+    console.log(typeof index, index)
+    let gameValue = inputGame.value.slice(0, index);
+    let qtyValue = inputQuantity.value;
+    let costValue = inputGame.value.slice(index+1)
+    let lineCost = parseFloat(qtyValue) * parseFloat(costValue)
+
 
     // Put our data we want to send in a javascript object
     let data = {
-        purchase_date: dateValue,
-        customer_id: customerValue
+        purchase_id: invoiceValue,
+        cardgame_id: gameValue,
+        purchase_qty: qtyValue,
+        line_cost: lineCost
     }
+
+    console.log(data)
     
     // Setup our AJAX request
     var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "/add-invoice-ajax", true);
+    xhttp.open("POST", "/add-invoice-lines-ajax", true);
     xhttp.setRequestHeader("Content-type", "application/json");
 
     // Tell our AJAX request how to resolve
@@ -33,7 +50,7 @@ addInvoiceForm.addEventListener("submit", function (e) {
 
             // Add the new data to the table
             addRowToTable(xhttp.response);
-
+            
         }
         else if (xhttp.readyState == 4 && xhttp.status != 200) {
             console.log("There was an error with the input.")
@@ -46,11 +63,12 @@ addInvoiceForm.addEventListener("submit", function (e) {
 })
 
 
+
 // Creates a single row from an Object representing a single record
 addRowToTable = (data) => {
 
     // Get a reference to the current table on the page and clear it out.
-    let currentTable = document.getElementById("invoices-table");
+    let currentTable = document.getElementById("invoice-lines-table");
 
     // Get the location where we should insert the new row (end of table)
     let newRowIndex = currentTable.rows.length;
@@ -62,26 +80,26 @@ addRowToTable = (data) => {
     // Create a row and 4 cells
     let row = document.createElement("TR");
     let idCell = document.createElement("TD");
-    let dateCell = document.createElement("TD");
-    let nameCell = document.createElement("TD");
-    let emailCell = document.createElement("TD");
+    let invoiceCell = document.createElement("TD");
+    let titleCell = document.createElement("TD");
+    let qtyCell = document.createElement("TD");
+    let costCell = document.createElement("TD");
 
 
 
     // Fill the cells with correct data
-    idCell.innerText = newRow.purchase_id;
-    dateCell.innerText = newRow.purchase_date;
-    nameCell.innerText = newRow.name;
-    emailCell.innerText = newRow.email;
+    idCell.innerText = newRow.invoiceline_id;
+    invoiceCell.innerText = newRow.purchase_id;
+    titleCell.innerText = newRow.title;
+    qtyCell.innerText = newRow.purchase_qty;
+    costCell.innerText = newRow.line_cost;
 
     // Add the cells to the row 
     row.appendChild(idCell);
-    row.appendChild(dateCell);
-    row.appendChild(nameCell);
-    row.appendChild(emailCell);
-    
-    // Add a custom row attribute so the deleteRow function can find a newly added row
-    row.setAttribute('data-value', newRow.customer_id);
+    row.appendChild(invoiceCell);
+    row.appendChild(titleCell);
+    row.appendChild(qtyCell);
+    row.appendChild(costCell);
 
     // Add the row to the table
     currentTable.appendChild(row);

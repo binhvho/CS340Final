@@ -1,0 +1,76 @@
+
+<!-- index.hbs -->
+[ <a href="/">Home</a> | <a href="/cardgames">Card Games</a> | <a href="/genres">Genres</a> | <a href="/cardgames_genres">Games by Genres</a> | <a href="/developers">Developers</a> | <a href="/invoices">Invoices</a> | <a href="/invoice_lines">Invoice Lines</a> | <a href="/customers">Customers</a>]
+<h1>Invoice Lines Table</h1>
+<p>Use this page to look at a list of all individual invoice lines.</p>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+
+{{!-- The Data from our Database --}}
+
+{{!-- Create a table --}}
+<table id="invoice-lines-table">
+
+    {{!-- Header section --}}
+    <thead>
+
+        {{!-- For just the first row, we print each key of the row object as a header cell so we
+        know what each column means when the page renders --}}
+        <tr>
+            {{#each invoiceLines.[0]}}
+            <th>
+                {{@key}}
+            </th>
+            {{/each}}
+        </tr>
+    </thead>
+
+    {{!-- Body section --}}
+    <tbody>
+
+        {{!-- For each row, print in order --}}
+        {{#each invoiceLines}}
+        <tr>
+            <td>{{this.invoiceline_id}}</td>
+            <td>{{this.purchase_id}}</td>
+            <td>{{this.title}}</td>
+            <td>{{this.purchase_qty}}</td>
+            <td>{{this.line_cost}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<!-- /views/index.hbs -->
+
+{{!-- Form to add a record to the table  --}}
+<h2>Adding an Invoice</h2>
+<p>Please select which customer you'd like to make an invoice for and click 'Submit'!</p>
+<form id="add-invoice-lines-form-ajax">
+    
+    <label for="input-invoice">Customer: </label>
+    <select name="input-invoice" id="input-invoice-ajax">
+        <option value="">Select an Invoice</option>
+        {{#each invoices}}
+        <option value="{{this.purchase_id}}">{{this.purchase_date}}, {{this.name}}, {{this.email}}</option>
+        {{/each}}
+    </select>
+
+    <label for="input-game">Customer: </label>
+    <select name="input-game" id="input-game-ajax">
+        <option value="">Select a CardGame</option>
+        {{#each cardGames}}
+        <option value={{this.cardgame_id}},{{this.price_per_pack}}>{{this.title}}</option>
+        {{/each}}
+    </select>
+
+    <label for="input-qty">Quantity: </label>
+    <input type="number" name="input-qty" id="input-qty">
+
+    <input type="submit">
+</form>
+
+{{!-- Embed our javascript to handle the DOM manipulation and AJAX request --}}
+<script src="./js/add_invoice_lines.js"></script>
+

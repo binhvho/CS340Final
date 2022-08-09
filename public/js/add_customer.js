@@ -42,7 +42,6 @@ addCustomerForm.addEventListener("submit", function (e) {
             // Clear the input fields for another transaction
             inputName.value = '';
             inputPhoneNum.value = '';
-            inputBirthday.value = '';
             inputEmail.value = '';
         }
         else if (xhttp.readyState == 4 && xhttp.status != 200) {
@@ -89,7 +88,7 @@ addRowToTable = (data) => {
     deleteCell = document.createElement("button");
     deleteCell.innerHTML = "Delete";
     deleteCell.onclick = function(){
-        deletePerson(newRow.customer_id);
+        deleteCustomer(newRow.customer_id);
     };
 
 
@@ -107,15 +106,4 @@ addRowToTable = (data) => {
 
     // Add the row to the table
     currentTable.appendChild(row);
-
-    // Start of new Step 8 code for adding new data to the dropdown menu for updating people
-    
-    // Find drop down menu, create a new option, fill data in the option (full name, id),
-    // then append option to drop down menu so newly created rows via ajax will be found in it without needing a refresh
-    let selectMenu = document.getElementById("mySelect");
-    let option = document.createElement("option");
-    option.text = newRow.name;
-    option.value = newRow.customer_id;
-    selectMenu.add(option);
-    // End of new step 8 code.
 }

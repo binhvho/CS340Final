@@ -76,8 +76,24 @@ app.post('/add-customer-ajax', function (req, res) {
     })
 });
 
+app.delete('/delete-customer-ajax/', function(req,res,next){
+    let data = req.body;
+    let customerID = parseInt(data.customer_id);
+    let deleteCustomer = `DELETE FROM Customers WHERE customer_id = ?`;
+    
+    db.pool.query(deleteCustomer, [customerID], function(error, rows, fields) {
+  
+        if (error) {
+            console.log(error);
+            res.sendStatus(400);
+        } else {
+            res.sendStatus(204);
+        }
+    })  
+  });
+
 app.get('/invoices', function (req, res) {
-    let query1 = "SELECT purchase_id, purchase_date, Customers.name, Customers.email FROM Invoices JOIN Customers WHERE Invoices.customer_id = Customers.customer_id ORDER BY purchase_id";
+    let query1 = "SELECT purchase_id, purchase_date, Customers.name, Customers.email FROM Invoices LEFT JOIN Customers ON Invoices.customer_id = Customers.customer_id ORDER BY purchase_id";
     
     db.pool.query(query1, function (error, rows, fields) {
 
@@ -111,7 +127,66 @@ app.post('/add-invoice-ajax', function (req, res) {
         }
         else {
             // If there was no error, perform a SELECT *
-            query2 = "SELECT purchase_id, purchase_date, Customers.name, Customers.email FROM Invoices JOIN Customers WHERE Invoices.customer_id = Customers.customer_id ORDER BY purchase_id";
+            query2 = "SELECT purchase_id, purchase_date, Customers.name, Customers.email FROM Invoices LEFT JOIN Customers ON Invoices.customer_id = Customers.customer_id ORDER BY purchase_id";
+            db.pool.query(query2, function (error, rows, fields) {
+
+                // If there was an error on the second query, send a 400
+                if (error) {
+
+                    // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+                    console.log(error);
+                    res.sendStatus(400);
+                }
+                // If all went well, send the results of the query back.
+                else {
+                    res.send(rows);
+                }
+            })
+        }
+    })
+});
+
+app.get('/invoice_lines', function (req, res) {
+    let query1 = "SELECT invoiceline_id, Invoices.purchase_id, CardGames.title, purchase_qty, line_cost FROM Invoices LEFT JOIN InvoiceLines ON Invoices.purchase_id = InvoiceLines.purchase_id LEFT JOIN CardGames ON InvoiceLines.cardgame_id = CardGames.cardgame_id ORDER BY invoiceline_id";
+    
+    db.pool.query(query1, function (error, rows, fields) {
+
+        let invoiceLines = rows
+        let query2 = "SELECT purchase_id, purchase_date, Customers.name, Customers.email FROM Invoices LEFT JOIN Customers ON Invoices.customer_id = Customers.customer_id ORDER BY purchase_id"
+        
+        db.pool.query(query2, function (error, rows, fields) {
+
+            let invoices = rows
+            let query3 = "SELECT * FROM CardGames"
+    
+            db.pool.query(query3, function (error, rows, fields) {
+                let cardGames = rows
+                res.render('invoice_lines', {invoiceLines: invoiceLines, invoices: invoices, cardGames: cardGames})
+            })
+
+        })
+    })
+});
+
+
+app.post('/add-invoice-lines-ajax', function (req, res) {
+    // Capture the incoming data and parse it back to a JS object
+    let data = req.body;
+
+    // Create the query and run it on the database
+    query1 = `INSERT INTO InvoiceLines (purchase_qty, line_cost, cardgame_id, purchase_id) VALUES (${data.purchase_qty}, ${data.line_cost}, ${data.cardgame_id}, ${data.purchase_id})`;
+    db.pool.query(query1, function (error, rows, fields) {
+
+        // Check to see if there was an error
+        if (error) {
+
+            // Log the error to the terminal so we know what went wrong, and send the visitor an HTTP response 400 indicating it was a bad request.
+            console.log(error)
+            res.sendStatus(400);
+        }
+        else {
+            // If there was no error, perform a SELECT *
+            query2 = "SELECT invoiceline_id, Invoices.purchase_id, CardGames.title, purchase_qty, line_cost FROM Invoices LEFT JOIN InvoiceLines ON Invoices.purchase_id = InvoiceLines.purchase_id LEFT JOIN CardGames ON InvoiceLines.cardgame_id = CardGames.cardgame_id ORDER BY invoiceline_id";
             db.pool.query(query2, function (error, rows, fields) {
 
                 // If there was an error on the second query, send a 400

@@ -254,7 +254,7 @@ INSERT INTO `cs340_hobi`.`InvoiceLines` (`invoiceline_id`, `purchase_qty`, `line
 INSERT INTO `cs340_hobi`.`InvoiceLines` (`invoiceline_id`, `purchase_qty`, `line_cost`, `cardgame_id`, `purchase_id`) VALUES (2, 1, 8.99, 5, 1);
 INSERT INTO `cs340_hobi`.`InvoiceLines` (`invoiceline_id`, `purchase_qty`, `line_cost`, `cardgame_id`, `purchase_id`) VALUES (3, 5, 60.95, 4, 2);
 INSERT INTO `cs340_hobi`.`InvoiceLines` (`invoiceline_id`, `purchase_qty`, `line_cost`, `cardgame_id`, `purchase_id`) VALUES (4, 1, 74.99, 2, 3);
-INSERT INTO `cs340_hobi`.`InvoiceLines` (`invoiceline_id`, `purchase_qty`, `line_cost`, `cardgame_id`, `purchase_id`) VALUES (5, 10, 839.50, 3, 4);
+INSERT INTO `cs340_hobi`.`InvoiceLines` (`invoiceline_id`, `purchase_qty`, `line_cost`, `cardgame_id`, `purchase_id`) VALUES (5, 10, 83.95, 3, 4);
 INSERT INTO `cs340_hobi`.`InvoiceLines` (`invoiceline_id`, `purchase_qty`, `line_cost`, `cardgame_id`, `purchase_id`) VALUES (6, 2, 167.90, 3, 5);
 
 COMMIT;
